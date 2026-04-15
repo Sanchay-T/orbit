@@ -49,11 +49,11 @@ export const orbitDarkTheme: Theme = {
     background: "rgba(255, 255, 255, 0.05)",
   },
   cluster: {
-    stroke: "#3f3f46",
+    stroke: "#18181b",
     fill: undefined as unknown as string,
-    opacity: 0.5,
+    opacity: 0.2,
     label: {
-      color: "transparent", // Hide cluster labels — use CategoryLegend instead
+      color: "#09090b", // Match background to hide — transparent doesn't work in three.js
       stroke: "#09090b",
     },
   },

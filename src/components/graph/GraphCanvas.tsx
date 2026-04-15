@@ -39,7 +39,7 @@ export default function GraphCanvas({
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const [layout, setLayout] = useState<LayoutKey>("forceDirected");
   const [sizing, setSizing] = useState<SizingKey>("attribute");
-  const [clusterOn, setClusterOn] = useState(true);
+  const [clusterOn, setClusterOn] = useState(false);
   const [hover, setHover] = useState<{ node: ReagraphNode | null; x: number; y: number }>({
     node: null, x: 0, y: 0,
   });
