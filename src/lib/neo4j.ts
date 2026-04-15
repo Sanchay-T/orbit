@@ -14,6 +14,35 @@ function getDriver(): Driver {
 }
 
 /**
+ * Recursively unwrap Neo4j driver types to plain JS values.
+ * Handles: Integer → number, Node → properties object, Relationship → properties.
+ */
+function unwrapValue(val: unknown): unknown {
+  if (val === null || val === undefined) return val;
+  if (neo4j.isInt(val)) return (val as { toNumber(): number }).toNumber();
+  // Node object — has .properties
+  if (typeof val === "object" && val !== null && "properties" in val && "labels" in val) {
+    const props = (val as { properties: Record<string, unknown> }).properties;
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(props)) {
+      out[k] = unwrapValue(v);
+    }
+    return out;
+  }
+  // Relationship object
+  if (typeof val === "object" && val !== null && "properties" in val && "type" in val) {
+    const props = (val as { properties: Record<string, unknown> }).properties;
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(props)) {
+      out[k] = unwrapValue(v);
+    }
+    return out;
+  }
+  if (Array.isArray(val)) return val.map(unwrapValue);
+  return val;
+}
+
+/**
  * Tenant-isolated Neo4j query helper.
  * Every query receives a `userId` param for multi-tenant isolation.
  * Callers MUST include `WHERE ... userId = $userId` in their Cypher.
@@ -31,13 +60,7 @@ export async function queryNeo4j<T = Record<string, unknown>>(
     return result.records.map((r) => {
       const obj: Record<string, unknown> = {};
       for (const key of r.keys) {
-        const val = r.get(key);
-        // Convert Neo4j Integer to JS number
-        if (neo4j.isInt(val)) {
-          obj[key as string] = val.toNumber();
-        } else {
-          obj[key as string] = val;
-        }
+        obj[key as string] = unwrapValue(r.get(key));
       }
       return obj as T;
     });
