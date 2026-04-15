@@ -4,9 +4,16 @@ let driver: Driver | null = null;
 
 function getDriver(): Driver {
   if (!driver) {
+    const uri = (process.env.NEO4J_URI || "").trim();
+    const user = (process.env.NEO4J_USER || "").trim();
+    const password = (process.env.NEO4J_PASSWORD || "").trim();
+
+    // Diagnostic: log env var lengths to catch trailing newlines
+    console.log(`[neo4j] creating driver: uri=${uri.length}chars, user=${user.length}chars, pass=${password.length}chars`);
+
     driver = neo4j.driver(
-      process.env.NEO4J_URI!,
-      neo4j.auth.basic(process.env.NEO4J_USER!, process.env.NEO4J_PASSWORD!),
+      uri,
+      neo4j.auth.basic(user, password),
       { maxConnectionPoolSize: 50 }
     );
   }
