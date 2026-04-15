@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
  * High-level graph statistics for the authenticated user.
  */
 export async function GET(request: NextRequest) {
+  try {
   const auth = await getAgentOrSessionAuth(request);
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -31,4 +32,8 @@ export async function GET(request: NextRequest) {
     goingCold,
     totalInteractions: (edgeRows[0] as { count: number })?.count ?? 0,
   });
+  } catch (e) {
+    console.error("[v1/graph] error:", e);
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
 }
