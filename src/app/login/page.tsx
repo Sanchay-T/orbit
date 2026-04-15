@@ -7,14 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Particles } from "@/components/ui/particles";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -45,23 +38,46 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
-      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-zinc-50">Welcome back</CardTitle>
-          <CardDescription className="text-zinc-400">
-            Sign in to your Orbit account
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleLogin}>
-          <CardContent className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#08080c] px-4 relative overflow-hidden">
+      <Particles
+        className="absolute inset-0 z-0"
+        quantity={40}
+        color="#7c5cfc"
+        size={0.3}
+        staticity={50}
+      />
+      <div className="absolute top-[-30%] left-[30%] w-[500px] h-[500px] rounded-full bg-violet-600/6 blur-[120px]" />
+
+      <div className="relative z-10 w-full max-w-sm">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-10">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-sm font-semibold shadow-lg shadow-violet-500/20">
+            O
+          </div>
+          <span className="text-[17px] font-semibold tracking-[-0.02em] text-zinc-100">
+            Orbit
+          </span>
+        </div>
+
+        {/* Form card */}
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8">
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-semibold tracking-[-0.02em] text-zinc-100 mb-1">
+              Welcome back
+            </h1>
+            <p className="text-sm text-zinc-500">
+              Sign in to your Orbit account
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
             {error && (
-              <div className="text-sm text-red-400 bg-red-950/50 border border-red-900 rounded-md p-3">
+              <div className="text-sm text-red-400 bg-red-500/5 border border-red-500/10 rounded-lg p-3">
                 {error}
               </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-300">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs text-zinc-400 font-medium">
                 Email
               </Label>
               <Input
@@ -71,11 +87,11 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-zinc-800 border-zinc-700 text-zinc-50 placeholder:text-zinc-500"
+                className="h-10 bg-white/[0.03] border-white/[0.06] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:ring-violet-500/20"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-zinc-300">
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs text-zinc-400 font-medium">
                 Password
               </Label>
               <Input
@@ -85,30 +101,29 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-zinc-800 border-zinc-700 text-zinc-50 placeholder:text-zinc-500"
+                className="h-10 bg-white/[0.03] border-white/[0.06] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:ring-violet-500/20"
               />
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
             <Button
               type="submit"
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white"
+              className="w-full h-10 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium text-sm shadow-lg shadow-violet-500/20 mt-2"
               disabled={loading}
             >
               {loading ? "Signing in..." : "Sign in"}
             </Button>
-            <p className="text-sm text-zinc-400">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/signup"
-                className="text-violet-400 hover:text-violet-300"
-              >
-                Sign up
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+          </form>
+
+          <p className="text-center text-sm text-zinc-500 mt-6">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/signup"
+              className="text-violet-400 hover:text-violet-300 transition-colors"
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

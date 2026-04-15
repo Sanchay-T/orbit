@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Particles } from "@/components/ui/particles";
 
 interface DashboardShellProps {
   user: {
@@ -44,38 +45,49 @@ export function DashboardShell({ user }: DashboardShellProps) {
     .slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50 flex flex-col">
+    <div className="min-h-screen bg-[#08080c] text-zinc-50 flex flex-col relative overflow-hidden">
+      {/* Subtle background */}
+      <Particles
+        className="absolute inset-0 z-0"
+        quantity={30}
+        color="#7c5cfc"
+        size={0.3}
+        staticity={60}
+      />
+
       {/* TopBar */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-zinc-800/50">
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center text-xs font-bold">
+      <header className="relative z-10 flex items-center justify-between px-6 py-3 border-b border-white/[0.04]">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-xs font-semibold shadow-lg shadow-violet-500/15">
             O
           </div>
-          <span className="font-semibold text-zinc-200">Orbit</span>
+          <span className="text-[15px] font-semibold tracking-[-0.02em] text-zinc-200">
+            Orbit
+          </span>
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="relative h-9 w-9 rounded-full focus:outline-none cursor-pointer">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-violet-600 text-white text-xs">
+          <DropdownMenuTrigger className="relative h-8 w-8 rounded-full focus:outline-none cursor-pointer hover:ring-2 hover:ring-violet-500/30 transition-all">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-[11px] font-medium">
                 {initials}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-56 bg-zinc-900 border-zinc-800"
+            className="w-52 bg-[#12121a] border-white/[0.06]"
           >
-            <div className="px-3 py-2">
+            <div className="px-3 py-2.5">
               <p className="text-sm font-medium text-zinc-200">
                 {user.displayName}
               </p>
-              <p className="text-xs text-zinc-500">{user.email}</p>
+              <p className="text-xs text-zinc-500 mt-0.5">{user.email}</p>
             </div>
-            <DropdownMenuSeparator className="bg-zinc-800" />
+            <DropdownMenuSeparator className="bg-white/[0.06]" />
             <DropdownMenuItem
               onClick={handleSignOut}
-              className="text-zinc-400 focus:text-zinc-50 cursor-pointer"
+              className="text-zinc-400 focus:text-zinc-50 focus:bg-white/[0.04] cursor-pointer text-sm"
             >
               Sign out
             </DropdownMenuItem>
@@ -84,32 +96,32 @@ export function DashboardShell({ user }: DashboardShellProps) {
       </header>
 
       {/* Main content — empty state */}
-      <main className="flex-1 flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto mb-6">
-            <svg
-              className="w-8 h-8 text-zinc-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-              />
-            </svg>
+      <main className="relative z-10 flex-1 flex items-center justify-center">
+        <div className="text-center max-w-md px-6">
+          <div className="relative w-20 h-20 mx-auto mb-8">
+            {/* Orbital ring animation */}
+            <div className="absolute inset-0 rounded-full border border-violet-500/20 animate-spin" style={{ animationDuration: "8s" }}>
+              <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-violet-500 shadow-[0_0_10px_rgba(124,92,252,0.5)]" />
+            </div>
+            <div className="absolute inset-3 rounded-full border border-indigo-500/10 animate-spin" style={{ animationDuration: "12s", animationDirection: "reverse" }}>
+              <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.4)]" />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center">
+                <div className="w-3 h-3 rounded-full bg-violet-500 shadow-[0_0_15px_rgba(124,92,252,0.4)]" />
+              </div>
+            </div>
           </div>
-          <h2 className="text-xl font-semibold text-zinc-200 mb-2">
+
+          <h2 className="text-xl font-semibold tracking-[-0.02em] text-zinc-100 mb-2">
             Your constellation awaits
           </h2>
-          <p className="text-sm text-zinc-500 mb-6">
+          <p className="text-sm text-zinc-500 mb-8 leading-relaxed">
             Add contacts or connect a data source to see your relationship graph come to life.
           </p>
           <Button
             variant="outline"
-            className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+            className="border-white/[0.08] text-zinc-300 hover:bg-white/[0.04] hover:border-violet-500/20 transition-all"
             disabled
           >
             Coming soon: Add contacts
@@ -118,13 +130,16 @@ export function DashboardShell({ user }: DashboardShellProps) {
       </main>
 
       {/* BottomBar */}
-      <footer className="flex items-center justify-between px-6 py-2 border-t border-zinc-800/50 text-xs text-zinc-600">
-        <div className="flex items-center gap-4">
+      <footer className="relative z-10 flex items-center justify-between px-6 py-2.5 border-t border-white/[0.04] text-xs text-zinc-600">
+        <div className="flex items-center gap-5">
           <span>0 People</span>
           <span>0 Connections</span>
           <span>0 Going Cold</span>
         </div>
-        <span>Powered by Orbit</span>
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 opacity-50" />
+          <span>Orbit</span>
+        </div>
       </footer>
     </div>
   );
