@@ -134,6 +134,12 @@ export function Dashboard({ user }: DashboardProps) {
               <p className="text-[11px] text-zinc-500 mt-0.5">{user.email}</p>
             </div>
             <DropdownMenuSeparator className="bg-zinc-800" />
+            <DropdownMenuItem
+              onClick={() => router.push("/dashboard/settings")}
+              className="text-zinc-400 focus:text-zinc-100 focus:bg-zinc-800/50 cursor-pointer text-[13px]"
+            >
+              Integrations
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleSignOut} className="text-zinc-400 focus:text-zinc-100 focus:bg-zinc-800/50 cursor-pointer text-[13px]">
               Sign out
             </DropdownMenuItem>
