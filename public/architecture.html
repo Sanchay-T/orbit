@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbit — System Architecture</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #09090b; color: #fafafa; font-family: 'DM Sans', -apple-system, sans-serif; padding: 40px; min-height: 100vh; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .subtitle { color: #71717a; font-size: 14px; margin-bottom: 40px; }
+
+  .diagram { position: relative; width: 100%; max-width: 1100px; margin: 0 auto; height: 750px; }
+
+  .box {
+    position: absolute; border-radius: 12px; padding: 16px 20px;
+    border: 1px solid #27272a; background: #0c0c10;
+    transition: all 0.2s;
+  }
+  .box:hover { border-color: #3f3f46; background: #111118; }
+  .box h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.01em; }
+  .box p { font-size: 11px; color: #71717a; line-height: 1.5; }
+  .box .tag { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 4px; margin-bottom: 8px; }
+
+  .human { border-color: #3b82f6; }
+  .human .tag { background: #1e3a5f; color: #60a5fa; }
+
+  .agent { border-color: #f97316; }
+  .agent .tag { background: #431407; color: #fb923c; }
+
+  .platform { border-color: #22c55e; }
+  .platform .tag { background: #052e16; color: #4ade80; }
+
+  .data { border-color: #8b5cf6; }
+  .data .tag { background: #1e1b4b; color: #a78bfa; }
+
+  svg.arrows { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  .arrow { stroke-width: 1.5; fill: none; }
+  .arrow-write { stroke: #f97316; stroke-dasharray: 6 4; }
+  .arrow-read { stroke: #3b82f6; }
+  .arrow-auth { stroke: #22c55e; stroke-dasharray: 3 3; }
+  .arrow-human { stroke: #71717a; }
+
+  .label-box {
+    position: absolute; font-size: 9px; color: #a1a1aa; background: #09090b;
+    padding: 2px 6px; border-radius: 3px; white-space: nowrap; pointer-events: none;
+  }
+
+  .legend { display: flex; gap: 24px; margin-top: 30px; justify-content: center; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #71717a; }
+  .legend-line { width: 24px; height: 2px; border-radius: 1px; }
+
+  .section-label { position: absolute; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #3f3f46; }
+</style>
+</head>
+<body>
+
+<h1>Orbit System Architecture</h1>
+<p class="subtitle">How humans, AI agents, and the platform work together</p>
+
+<div class="diagram">
+  <!-- Section labels -->
+  <div class="section-label" style="top: 0; left: 20px;">HUMAN LAYER</div>
+  <div class="section-label" style="top: 0; left: 400px;">AGENT LAYER (OpenClaw)</div>
+  <div class="section-label" style="top: 0; left: 800px;">PLATFORM LAYER</div>
+
+  <!-- HUMAN LAYER -->
+  <div class="box human" style="top: 40px; left: 20px; width: 200px;">
+    <span class="tag">Human</span>
+    <h3>Sanchay (You)</h3>
+    <p>Uses WhatsApp, Gmail, Calendar, Slack, Telegram, iMessage daily. Conversations are the raw signal.</p>
+  </div>
+
+  <div class="box human" style="top: 220px; left: 20px; width: 200px;">
+    <span class="tag">Human</span>
+    <h3>Orbit Dashboard</h3>
+    <p>Web app at orbit-mu-roan.vercel.app. View constellation, search contacts, add manually, filter by category.</p>
+  </div>
+
+  <div class="box human" style="top: 420px; left: 20px; width: 200px;">
+    <span class="tag">Human</span>
+    <h3>Slack / Telegram DM</h3>
+    <p>Ask the agent: "who's going cold?" "brief me on Sarah Chen" — agent responds with Orbit data.</p>
+  </div>
+
+  <!-- AGENT LAYER -->
+  <div class="box agent" style="top: 40px; left: 360px; width: 240px;">
+    <span class="tag">Agent</span>
+    <h3>Wazowski (OpenClaw)</h3>
+    <p>Runs on claw VM. Has access to Slack, Telegram, Linear, browser, memory. Observes all conversations. Carries the orbit-saas plugin with 6 tools.</p>
+  </div>
+
+  <div class="box agent" style="top: 220px; left: 360px; width: 240px;">
+    <span class="tag">Agent</span>
+    <h3>Orbit Plugin (6 tools)</h3>
+    <p><strong>Read:</strong> orbit_lookup, orbit_person_card, orbit_going_cold, orbit_graph_stats<br>
+    <strong>Write:</strong> orbit_ingest, orbit_log_interaction</p>
+  </div>
+
+  <div class="box data" style="top: 420px; left: 360px; width: 240px;">
+    <span class="tag">Data Sources</span>
+    <h3>Raw Signals</h3>
+    <p>WhatsApp: 2K contacts, 62K msgs, 402 groups<br>
+    Gmail: 201 emails with From/To/Cc<br>
+    Calendar: events with attendees<br>
+    Slack: 13 workspace members<br>
+    Linear: team + issues</p>
+  </div>
+
+  <div class="box agent" style="top: 600px; left: 360px; width: 240px;">
+    <span class="tag">Agent</span>
+    <h3>Any Future Agent</h3>
+    <p>Any OpenClaw instance installs the plugin, sets ORBIT_API_KEY, and gets the same 6 tools. Each agent = separate user profile in Orbit.</p>
+  </div>
+
+  <!-- PLATFORM LAYER -->
+  <div class="box platform" style="top: 40px; left: 750px; width: 240px;">
+    <span class="tag">Platform</span>
+    <h3>Orbit SaaS API</h3>
+    <p>Next.js on Vercel. REST endpoints at /api/v1/*. Bearer token auth (orb_live_*). Rate-limited. Tenant-isolated.</p>
+  </div>
+
+  <div class="box platform" style="top: 220px; left: 750px; width: 240px;">
+    <span class="tag">Platform</span>
+    <h3>Neo4j Aura (Graph DB)</h3>
+    <p>Person nodes + INTERACTED edges + KNOWS edges. Every node/edge has userId for tenant isolation. Cypher queries.</p>
+  </div>
+
+  <div class="box platform" style="top: 400px; left: 750px; width: 240px;">
+    <span class="tag">Platform</span>
+    <h3>Supabase (Auth + Metadata)</h3>
+    <p>User accounts, profiles, API keys (SHA256 hashed), connectors table. RLS policies. PostgreSQL.</p>
+  </div>
+
+  <div class="box platform" style="top: 570px; left: 750px; width: 240px;">
+    <span class="tag">Platform</span>
+    <h3>Signal → Graph Algorithm</h3>
+    <p style="color: #f97316;">🔧 IN PROGRESS</p>
+    <p>Identity resolution, relationship scoring (recency × depth × reciprocity), KNOWS edge derivation with provenance chains.</p>
+  </div>
+
+  <!-- ARROWS -->
+  <svg class="arrows">
+    <!-- Human uses channels → Agent observes -->
+    <path class="arrow arrow-human" d="M 220 80 L 360 80" marker-end="url(#arrowGray)" />
+
+    <!-- Agent → Plugin -->
+    <path class="arrow arrow-write" d="M 480 155 L 480 220" marker-end="url(#arrowOrange)" />
+
+    <!-- Agent reads data sources -->
+    <path class="arrow arrow-read" d="M 480 315 L 480 420" marker-end="url(#arrowBlue)" />
+
+    <!-- Plugin → Orbit API (write) -->
+    <path class="arrow arrow-write" d="M 600 260 L 750 100" marker-end="url(#arrowOrange)" />
+
+    <!-- Plugin → Orbit API (read) -->
+    <path class="arrow arrow-read" d="M 600 240 L 750 80" marker-end="url(#arrowBlue)" />
+
+    <!-- Orbit API → Neo4j -->
+    <path class="arrow arrow-write" d="M 870 155 L 870 220" marker-end="url(#arrowOrange)" />
+
+    <!-- Orbit API → Supabase -->
+    <path class="arrow arrow-auth" d="M 870 155 L 870 400" marker-end="url(#arrowGreen)" />
+
+    <!-- Dashboard → Orbit API -->
+    <path class="arrow arrow-read" d="M 220 270 Q 500 200 750 80" marker-end="url(#arrowBlue)" />
+
+    <!-- Human DM → Agent -->
+    <path class="arrow arrow-human" d="M 220 460 L 360 100" marker-end="url(#arrowGray)" />
+
+    <!-- Future agent → Orbit API -->
+    <path class="arrow arrow-write" d="M 600 640 Q 700 500 770 155" marker-end="url(#arrowOrange)" stroke-dasharray="4 4" />
+
+    <!-- Data sources → Agent (observed) -->
+    <path class="arrow arrow-human" d="M 360 480 Q 300 400 220 120" marker-end="url(#arrowGray)" stroke-dasharray="2 4" />
+
+    <!-- Signal algorithm from Neo4j -->
+    <path class="arrow arrow-auth" d="M 870 340 L 870 400" />
+    <path class="arrow arrow-auth" d="M 870 500 L 870 570" marker-end="url(#arrowGreen)" />
+
+    <!-- Arrow markers -->
+    <defs>
+      <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#f97316" />
+      </marker>
+      <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#3b82f6" />
+      </marker>
+      <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#22c55e" />
+      </marker>
+      <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#71717a" />
+      </marker>
+    </defs>
+  </svg>
+
+  <!-- Flow labels -->
+  <div class="label-box" style="top: 65px; left: 260px;">observes conversations</div>
+  <div class="label-box" style="top: 175px; left: 420px;">uses tools</div>
+  <div class="label-box" style="top: 365px; left: 420px;">reads raw data</div>
+  <div class="label-box" style="top: 180px; left: 630px;">orbit_ingest (write)</div>
+  <div class="label-box" style="top: 155px; left: 630px;">orbit_lookup (read)</div>
+  <div class="label-box" style="top: 175px; left: 880px;">Cypher queries</div>
+  <div class="label-box" style="top: 280px; left: 880px;">auth + profiles</div>
+  <div class="label-box" style="top: 200px; left: 350px;">session auth</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-line" style="background: #f97316;"></div> Write (agent → platform)</div>
+  <div class="legend-item"><div class="legend-line" style="background: #3b82f6;"></div> Read (platform → agent/human)</div>
+  <div class="legend-item"><div class="legend-line" style="background: #22c55e;"></div> Auth / internal</div>
+  <div class="legend-item"><div class="legend-line" style="background: #71717a;"></div> Human interaction</div>
+</div>
+
+<div style="max-width: 1100px; margin: 40px auto 0; padding: 24px; border: 1px solid #27272a; border-radius: 12px; background: #0c0c10;">
+  <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">The Flow</h3>
+  <div style="font-size: 13px; color: #a1a1aa; line-height: 2;">
+    <strong style="color: #fafafa;">1.</strong> You have conversations across WhatsApp, Gmail, Calendar, Slack, Telegram.<br>
+    <strong style="color: #fafafa;">2.</strong> Your OpenClaw agent (Wazowski) observes these conversations — it has access to all channels.<br>
+    <strong style="color: #fafafa;">3.</strong> The agent calls <code style="color: #f97316; background: #1a1a2e; padding: 1px 4px; border-radius: 3px;">orbit_ingest</code> to push participants, summaries, and cross-connections to Orbit.<br>
+    <strong style="color: #fafafa;">4.</strong> Orbit stores Person nodes + INTERACTED edges + KNOWS edges in Neo4j, tenant-isolated by your userId.<br>
+    <strong style="color: #fafafa;">5.</strong> You view the constellation on the dashboard, or ask the agent in Slack: "who's going cold?"<br>
+    <strong style="color: #fafafa;">6.</strong> The agent calls <code style="color: #3b82f6; background: #1a1a2e; padding: 1px 4px; border-radius: 3px;">orbit_going_cold</code> and responds with actionable intelligence.<br>
+    <strong style="color: #fafafa;">7.</strong> Every 4 hours, a cron job triggers the agent to sync recent activity into Orbit automatically.<br>
+    <strong style="color: #fafafa;">8.</strong> <span style="color: #f97316;">IN PROGRESS:</span> Server-side algorithm resolves identities across sources, scores relationships, and derives KNOWS edges with provenance.
+  </div>
+</div>
+
+</body>
+</html>
